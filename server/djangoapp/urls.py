@@ -9,7 +9,8 @@ urlpatterns = [
     #  path for Get cars list
     path(route='get_cars', view=views.get_cars, name ='getcars'),
     # # path for registration
-    path(route='registration', view=views.registration, name='registration'),
+    path(route='register', view=views.registration, name='registration'),
+    # path('register', views.registration, name='registration'),
     # path for login
     path(route='login', view=views.login_user, name='login'),
     # path for logout
