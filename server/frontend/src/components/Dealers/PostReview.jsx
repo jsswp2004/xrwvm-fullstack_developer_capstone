@@ -47,7 +47,9 @@ const PostReview = () => {
       "car_year": year,
     });
 
-    console.log(jsoninput);
+    // console.log(jsoninput);
+     // 📌 Debugging - Print review_url to check if it's correct
+     console.log("Review URL:", review_url);
     const res = await fetch(review_url, {
       method: "POST",
       headers: {

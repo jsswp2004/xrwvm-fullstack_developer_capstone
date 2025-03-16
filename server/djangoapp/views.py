@@ -114,7 +114,14 @@ def get_dealer_reviews(request, dealer_id):
         for review_detail in reviews:
             response = analyze_review_sentiments(review_detail['review'])
             print(response)
-            review_detail['sentiment'] = response['sentiment']
+            print("📌 Review:", review_detail['review'])  # Debugging
+            print("🔍 Sentiment Response:", response)  # Debugging
+
+
+            if response and 'sentiment' in response:
+                review_detail['sentiment'] = response['sentiment']
+            else:
+                review_detail['sentiment'] = "error"
         return JsonResponse({"status":200,"reviews":reviews})
     else:
         return JsonResponse({"status":400,"message":"Bad Request"})
@@ -131,14 +138,24 @@ def get_dealer_details(request, dealer_id):
 # Create a `add_review` view to submit a review
 # def add_review(request):
 # ...
-def add_review(request):
-    if(request.user.is_anonymous == False):
-        data = json.loads(request.body)
+#def add_review(request):
+#    if(request.user.is_anonymous == False):
+#        data = json.loads(request.body)
+#        try:
+#            response = post_review(data)
+#            return JsonResponse({"status":200})
+#        except:
+#            return JsonResponse({"status":401,"message":"Error in posting review"})
+#    else:
+#        return JsonResponse({"status":403,"message":"Unauthorized"})
+@csrf_exempt  # Disable CSRF for debugging, use CSRF token in production
+def add_review(request, dealer_id):
+    if request.method == "POST":  # Accept only POST requests
         try:
-            response = post_review(data)
-            return JsonResponse({"status":200})
-        except:
-            return JsonResponse({"status":401,"message":"Error in posting review"})
+            data = json.loads(request.body)  # Read JSON data
+            response = post_review(data)  # Call function to process review
+            return JsonResponse({"status": 200, "message": "Review added successfully!"})
+        except Exception as e:
+            return JsonResponse({"status": 500, "message": f"Error: {str(e)}"})
     else:
-        return JsonResponse({"status":403,"message":"Unauthorized"})
-
+        return JsonResponse({"status": 405, "message": "Method Not Allowed"})  # Block GET requests
