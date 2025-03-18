@@ -5,6 +5,7 @@ import "../assets/style.css";
 import Header from '../Header/Header';
 
 
+
 const PostReview = () => {
   const [dealer, setDealer] = useState({});
   const [review, setReview] = useState("");
@@ -18,7 +19,8 @@ const PostReview = () => {
   let params = useParams();
   let id =params.id;
   let dealer_url = root_url+`djangoapp/dealer/${id}`;
-  let review_url = root_url+`djangoapp/add_review`;
+  //let review_url = root_url+`djangoapp/add_review/${id}`;
+  let review_url = root_url+`postreview/${id}`;
   let carmodels_url = root_url+`djangoapp/get_cars`;
 
   const postreview = async ()=>{

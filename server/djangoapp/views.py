@@ -105,26 +105,73 @@ def get_dealerships(request, state="All"):
     return JsonResponse({"status":200,"dealers":dealerships})
 # Create a `get_dealer_reviews` view to render the reviews of a dealer
 # def get_dealer_reviews(request,dealer_id):
-# ...
-def get_dealer_reviews(request, dealer_id):
+# ... OLLLDDD
+# def get_dealer_reviews(request, dealer_id):
     # if dealer id has been provided
-    if(dealer_id):
+#    if(dealer_id):
+#        endpoint = "/fetchReviews/dealer/"+str(dealer_id)
+#        reviews = get_request(endpoint)
+#        for review_detail in reviews:
+#            response = analyze_review_sentiments(review_detail['review'])
+#            print(response)
+#            print("📌 Review:", review_detail['review'])  # Debugging
+#            print("🔍 Sentiment Response:", response)  # Debugging
+
+
+ #           if response and 'sentiment' in response:
+ #               review_detail['sentiment'] = response['sentiment']
+ #           else:
+ #               review_detail['sentiment'] = "error"
+ #       return JsonResponse({"status":200,"reviews":reviews})
+ #   else:
+ #       return JsonResponse({"status":400,"message":"Bad Request"})
+
+
+# NEW NEW
+def get_dealer_reviews(request, dealer_id):
+    # If dealer id has been provided
+    if dealer_id:
         endpoint = "/fetchReviews/dealer/"+str(dealer_id)
-        reviews = get_request(endpoint)
-        for review_detail in reviews:
-            response = analyze_review_sentiments(review_detail['review'])
-            print(response)
-            print("📌 Review:", review_detail['review'])  # Debugging
-            print("🔍 Sentiment Response:", response)  # Debugging
-
-
-            if response and 'sentiment' in response:
-                review_detail['sentiment'] = response['sentiment']
-            else:
-                review_detail['sentiment'] = "error"
-        return JsonResponse({"status":200,"reviews":reviews})
+        try:
+            reviews = get_request(endpoint)
+            
+            # Safety check - if reviews is None or not a list
+            if not reviews or not isinstance(reviews, list):
+                print(f"❌ Invalid reviews response: {reviews}")
+                return JsonResponse({"status": 500, "message": "Invalid review data format"})
+                
+            for review_detail in reviews:
+                try:
+                    # Check if review field exists
+                    if 'review' not in review_detail:
+                        print(f"❌ Missing review field in: {review_detail}")
+                        review_detail['sentiment'] = "error"
+                        continue
+                        
+                    response = analyze_review_sentiments(review_detail['review'])
+                    print(f"📌 Review: {review_detail['review']}")
+                    print(f"🔍 Sentiment Response: {response}")
+                    
+                    # More detailed error checking
+                    if response is None:
+                        print("❌ Sentiment analyzer returned None")
+                        review_detail['sentiment'] = "error"
+                    elif isinstance(response, dict) and 'sentiment' in response:
+                        review_detail['sentiment'] = response['sentiment']
+                    else:
+                        print(f"❌ Unexpected sentiment format: {response}")
+                        review_detail['sentiment'] = "error"
+                except Exception as e:
+                    print(f"❌ Error analyzing review: {e}")
+                    review_detail['sentiment'] = "error"
+                    
+            return JsonResponse({"status": 200, "reviews": reviews})
+        except Exception as e:
+            print(f"❌ Error getting dealer reviews: {e}")
+            return JsonResponse({"status": 500, "message": f"Server error: {str(e)}"})
     else:
-        return JsonResponse({"status":400,"message":"Bad Request"})
+        return JsonResponse({"status": 400, "message": "Bad Request"})
+
 # Create a `get_dealer_details` view to render the dealer details
 # def get_dealer_details(request, dealer_id):
 # ...
@@ -159,7 +206,8 @@ def get_dealer_details(request, dealer_id):
 #            return JsonResponse({"status": 500, "message": f"Error: {str(e)}"})
 #    else:
 #        return JsonResponse({"status": 405, "message": "Method Not Allowed"})  # Block GET requests
-
+# OLD
+"""
 def add_review(request):
     if(request.user.is_anonymous == False):
         data = json.loads(request.body)
@@ -170,3 +218,22 @@ def add_review(request):
             return JsonResponse({"status":401,"message":"Error in posting review"})
     else:
         return JsonResponse({"status":403,"message":"Unauthorized"})
+
+# In views.py, modify your add_review function:
+"""
+#New 
+@csrf_exempt
+def add_review(request, dealer_id=None):  # Make dealer_id optional with a default value
+    if request.method == "POST":
+    #if(request.user.is_anonymous == False):
+        try:
+            data = json.loads(request.body)
+            # If dealer_id is provided in the URL, use it
+            if dealer_id:
+                data['dealer_id'] = dealer_id
+            response = post_review(data)
+            return JsonResponse({"status": 200, "message": "Review added successfully!"})
+        except Exception as e:
+            return JsonResponse({"status": 500, "message": f"Error: {str(e)}"})
+    else:
+        return JsonResponse({"status": 405, "message": "Method Not Allowed"})
