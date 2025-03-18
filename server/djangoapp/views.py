@@ -148,14 +148,25 @@ def get_dealer_details(request, dealer_id):
 #            return JsonResponse({"status":401,"message":"Error in posting review"})
 #    else:
 #        return JsonResponse({"status":403,"message":"Unauthorized"})
-@csrf_exempt  # Disable CSRF for debugging, use CSRF token in production
-def add_review(request, dealer_id):
-    if request.method == "POST":  # Accept only POST requests
+# @csrf_exempt  # Disable CSRF for debugging, use CSRF token in production
+# def add_review(request, dealer_id):
+#    if request.method == "POST":  # Accept only POST requests
+#        try:
+#            data = json.loads(request.body)  # Read JSON data
+#            response = post_review(data)  # Call function to process review
+#            return JsonResponse({"status": 200, "message": "Review added successfully!"})
+#        except Exception as e:
+#            return JsonResponse({"status": 500, "message": f"Error: {str(e)}"})
+#    else:
+#        return JsonResponse({"status": 405, "message": "Method Not Allowed"})  # Block GET requests
+
+def add_review(request):
+    if(request.user.is_anonymous == False):
+        data = json.loads(request.body)
         try:
-            data = json.loads(request.body)  # Read JSON data
-            response = post_review(data)  # Call function to process review
-            return JsonResponse({"status": 200, "message": "Review added successfully!"})
-        except Exception as e:
-            return JsonResponse({"status": 500, "message": f"Error: {str(e)}"})
+            response = post_review(data)
+            return JsonResponse({"status":200})
+        except:
+            return JsonResponse({"status":401,"message":"Error in posting review"})
     else:
-        return JsonResponse({"status": 405, "message": "Method Not Allowed"})  # Block GET requests
+        return JsonResponse({"status":403,"message":"Unauthorized"})
