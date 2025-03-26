@@ -23,12 +23,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('djangoapp/', include('djangoapp.urls')),
     # ✅ Static Django pages
-    #path('', TemplateView.as_view(template_name="Home.html")),
-    re_path(r'^$', TemplateView.as_view(template_name="index.html")),
+    path('', TemplateView.as_view(template_name="Home.html")),
+    #re_path(r'^$', TemplateView.as_view(template_name="index.html")),
     path('about/', TemplateView.as_view(template_name="About.html")),
     path('contact/', TemplateView.as_view(template_name="Contact.html")),
     #path('dealers/', TemplateView.as_view(template_name="index.html")),            # ✅ List of dealers
     #path('dealer/<int:dealer_id>/', TemplateView.as_view(template_name="index.html")),    # ✅ Single dealer detail
-    re_path(r'^(?!djangoapp|admin).*$', TemplateView.as_view(template_name="index.html")),
-] 
-#+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    re_path(r'^(?!djangoapp|admin|about|contact).*$', TemplateView.as_view(template_name="index.html")),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
