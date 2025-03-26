@@ -5,11 +5,16 @@ import { Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPanel />} />
-      <Route path="/dealers" element={<Dealers />} />
-      <Route path="/dealer/:id" element={<Dealer />} /> {/* ✅ Newly added */}
-    </Routes>
+        <div style={{ padding: "20px", border: "2px solid red" }}>
+      
+      <Routes>
+        <Route path="/login" element={<LoginPanel />} />
+        <Route path="/dealers" element={<Dealers />} />
+        <Route path="/dealer/:id" element={<Dealer />} />
+      </Routes>
+    </div>
+    
+
   );
 }
 

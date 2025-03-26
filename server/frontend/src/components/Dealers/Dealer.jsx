@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import "./Dealers.css";
@@ -7,20 +8,23 @@ import neutral_icon from "../assets/neutral.png";
 import negative_icon from "../assets/negative.png";
 import review_icon from "../assets/reviewbutton.png";
 import Header from '../Header/Header';
-
 const Dealer = () => {
   const [dealer, setDealer] = useState({});
   const [reviews, setReviews] = useState([]);
   const [unreviewed, setUnreviewed] = useState(false);
   const [postReview, setPostReview] = useState(<></>);
-
   const { id } = useParams();
-
+    /*
   const root_url = window.location.origin + "/";
   const dealer_url = `${root_url}djangoapp/dealer/${id}/`;
   const reviews_url = `${root_url}djangoapp/reviews/dealer/${id}/`;
   const post_review_url = `${root_url}postreview/${id}`;
-
+  const baseURL = "https://jsswp199427-3030.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/";
+    */
+  const baseURL = "https://jsswp199427-8000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/";
+  const dealer_url = `${baseURL}djangoapp/dealer/${id}`;
+  const reviews_url = `${baseURL}djangoapp/reviews/dealer/${id}/`;
+  const post_review_url = `${baseURL}postreview/${id}`;
   const get_dealer = async () => {
     try {
       const res = await fetch(dealer_url);
@@ -33,7 +37,6 @@ const Dealer = () => {
       console.error("Error fetching dealer:", error);
     }
   };
-
   const get_reviews = async () => {
     try {
       const res = await fetch(reviews_url);
@@ -49,7 +52,6 @@ const Dealer = () => {
       console.error("Error fetching reviews:", error);
     }
   };
-
   const senti_icon = (sentiment) => {
     return sentiment === "positive"
       ? positive_icon
@@ -57,14 +59,12 @@ const Dealer = () => {
       ? negative_icon
       : neutral_icon;
   };
-
   useEffect(() => {
-    console.log("✅ Dealer component mounted");
-    console.log("Fetching dealer from:", dealer_url);
-    console.log("Fetching reviews from:", reviews_url);
+   // console.log("✅ Dealer component mounted");
+   // console.log("Fetching dealer from:", dealer_url);
+   // console.log("Fetching reviews from:", reviews_url);
     get_dealer();
     get_reviews();
-
     if (sessionStorage.getItem("username")) {
       setPostReview(
         <a href={post_review_url}>
@@ -77,8 +77,6 @@ const Dealer = () => {
       );
     }
   }, []);
-
-
   return (
     <div style={{ margin: "20px" }}>
       <Header />
@@ -91,7 +89,6 @@ const Dealer = () => {
           {dealer?.city}, {dealer?.address}, Zip - {dealer?.zip}, {dealer?.state}
         </h4>
       </div>
-
       <div className="reviews_panel">
         {reviews.length === 0 && !unreviewed ? (
           <p>Loading Reviews...</p>
@@ -116,5 +113,4 @@ const Dealer = () => {
     </div>
   );
 };
-
 export default Dealer;
