@@ -27,6 +27,7 @@ urlpatterns = [
     #re_path(r'^$', TemplateView.as_view(template_name="index.html")),
     path('about/', TemplateView.as_view(template_name="About.html")),
     path('contact/', TemplateView.as_view(template_name="Contact.html")),
+    path('postreview/<int:dealer_id>',TemplateView.as_view(template_name="index.html")),
     #path('dealers/', TemplateView.as_view(template_name="index.html")),            # ✅ List of dealers
     #path('dealer/<int:dealer_id>/', TemplateView.as_view(template_name="index.html")),    # ✅ Single dealer detail
     re_path(r'^(?!djangoapp|admin|about|contact).*$', TemplateView.as_view(template_name="index.html")),
