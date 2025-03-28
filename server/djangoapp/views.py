@@ -75,6 +75,7 @@ def get_dealer_details(request, dealer_id):
 
 
 # ✅ View to get reviews for a specific dealer, including sentiment
+'''
 def get_dealer_reviews(request, dealer_id):
     if(dealer_id):
         endpoint = "/fetchReviews/dealer/" + str(dealer_id)
@@ -87,8 +88,28 @@ def get_dealer_reviews(request, dealer_id):
     else:
         return JsonResponse({"status": 400, "message": "Bad Request"})
 
+'''
+def get_dealer_reviews(request, dealer_id):
+    try:
+        reviews_query = Review.objects.filter(dealership=dealer_id)
+        reviews = []
+        for review_detail in reviews_query:
+            sentiment_response = analyze_review_sentiments(review_detail.review)
+            reviews.append({
+                "name": review_detail.name,
+                "review": review_detail.review,
+                "sentiment": sentiment_response["sentiment"],
+                "car_make": review_detail.car_make,
+                "car_model": review_detail.car_model,
+                "car_year": review_detail.car_year,
+                "purchase_date": review_detail.purchase_date,
+            })
+        return JsonResponse({"status": 200, "reviews": reviews})
+    except Exception as e:
+        return JsonResponse({"status": 500, "message": str(e)})
 
 # ✅ View to submit a review (POST only if authenticated)
+'''
 @csrf_exempt
 def add_review(request):
     if request.user.is_anonymous == False:
@@ -101,3 +122,26 @@ def add_review(request):
             return JsonResponse({"status": 401, "message": "Error in posting review"})
     else:
         return JsonResponse({"status": 403, "message": "Unauthorized"})
+'''
+@csrf_exempt
+def add_review(request):
+    if not request.user.is_anonymous:
+        data = json.loads(request.body)
+        try:
+            new_review = Review.objects.create(
+                dealership=data["dealership"],
+                name=data["name"],
+                review=data["review"],
+                purchase=data["purchase"],
+                purchase_date=data["purchase_date"],
+                car_make=data["car_make"],
+                car_model=data["car_model"],
+                car_year=data["car_year"]
+            )
+            new_review.save()
+            return JsonResponse({"status": 200, "message": "Review stored successfully"})
+        except Exception as e:
+            return JsonResponse({"status": 500, "message": str(e)})
+    else:
+        return JsonResponse({"status": 403, "message": "Unauthorized"})
+

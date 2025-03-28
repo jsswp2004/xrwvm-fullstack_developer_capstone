@@ -6,6 +6,18 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 # Create your models here.
+class Review(models.Model):
+    dealership = models.IntegerField()
+    name = models.CharField(max_length=255)
+    review = models.TextField()
+    purchase = models.BooleanField()
+    purchase_date = models.DateField(null=True)
+    car_make = models.CharField(max_length=50)
+    car_model = models.CharField(max_length=50)
+    car_year = models.CharField(max_length=4)
+
+    def __str__(self):
+        return f"{self.name}: {self.review}"
 
 # Car Make Model
 class CarMake(models.Model):

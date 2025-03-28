@@ -57,9 +57,19 @@ const PostReview = () => {
   });
 
   const json = await res.json();
+  /*
   if (json.status === 200) {
       window.location.href = window.location.origin+"/dealer/"+id;
   }
+  */
+    if (res.ok) {
+        /*alert("Review posted successfully!");*/
+        window.location.href = window.location.origin + "/dealer/" + id;
+    } else {
+        const json = await res.json();
+        alert("Failed to post review. " + (json.error || ''));
+    }
+
 
   }
   const get_dealer = async ()=>{

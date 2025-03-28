@@ -25,7 +25,7 @@ const Dealer = () => {
   const dealer_url = `${baseURL}djangoapp/dealer/${id}`;
   const reviews_url = `${baseURL}djangoapp/reviews/dealer/${id}/`;
   const post_review_url = `${baseURL}postreview/${id}`;
-  
+
   const get_dealer = async () => {
     try {
       const res = await fetch(dealer_url);
@@ -38,6 +38,7 @@ const Dealer = () => {
       console.error("Error fetching dealer:", error);
     }
   };
+  /*
   const get_reviews = async () => {
     try {
       const res = await fetch(reviews_url);
@@ -53,6 +54,27 @@ const Dealer = () => {
       console.error("Error fetching reviews:", error);
     }
   };
+  */
+  const get_reviews = async () => {
+    try {
+        const res = await fetch(reviews_url);
+        if (res.ok) {
+            const retobj = await res.json();
+            if (retobj.reviews && retobj.reviews.length > 0) {
+                setReviews(retobj.reviews);
+            } else {
+                setUnreviewed(true);
+            }
+        } else {
+            console.error("Failed to fetch reviews, status:", res.status);
+            setUnreviewed(true);
+        }
+    } catch (error) {
+        console.error("Error fetching reviews:", error);
+        setUnreviewed(true);
+    }
+};
+
   const senti_icon = (sentiment) => {
     return sentiment === "positive"
       ? positive_icon
