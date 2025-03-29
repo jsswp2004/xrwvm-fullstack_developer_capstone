@@ -2,7 +2,7 @@
 
 # from django.shortcuts import render
 # from django.http import HttpResponseRedirect, HttpResponse
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 # from django.shortcuts import get_object_or_404, render, redirect
 # from django.contrib.auth import logout
 # from django.contrib import messages
@@ -101,3 +101,16 @@ def add_review(request):
             return JsonResponse({"status": 401, "message": "Error in posting review"})
     else:
         return JsonResponse({"status": 403, "message": "Unauthorized"})
+
+@csrf_exempt
+def register_user(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        username = data.get("username")
+        password = data.get("password")
+        if not username or not password:
+            return JsonResponse({"status": "error", "message": "Missing fields"}, status=400)
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({"status": "error", "message": "User already exists"}, status=400)
+        user = User.objects.create_user(username=username, password=password)
+        return JsonResponse({"status": "success", "message": "User created"})
