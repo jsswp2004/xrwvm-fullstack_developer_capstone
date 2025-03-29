@@ -21,17 +21,26 @@ const Dealer = () => {
   const post_review_url = `${root_url}postreview/${id}`;
   const baseURL = "https://jsswp199427-3030.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/";
     */
+
   const baseURL = "https://jsswp199427-8000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/";
+  /*
   const dealer_url = `${baseURL}djangoapp/dealer/${id}`;
   const reviews_url = `${baseURL}djangoapp/reviews/dealer/${id}/`;
   const post_review_url = `${baseURL}postreview/${id}`;
+*/
+  const dealer_url = `/djangoapp/dealer/${id}`;
+const reviews_url = `/djangoapp/reviews/dealer/${id}/`;
+const post_review_url = `/postreview/${id}`;
+
   
   const get_dealer = async () => {
     try {
       const res = await fetch(dealer_url);
       const retobj = await res.json();
+      console.log("Dealer API response:", retobj); // ✅ Log this
       if (retobj.status === 200) {
         const data = Array.isArray(retobj.dealer) ? retobj.dealer[0] : retobj.dealer;
+        console.log("Parsed dealer:", data); // ✅ Log this too
         setDealer(data || {});
       }
     } catch (error) {
@@ -77,7 +86,7 @@ const Dealer = () => {
         </a>
       );
     }
-  }, []);
+  }, [id]);
   return (
     <div style={{ margin: "20px" }}>
       <Header />
