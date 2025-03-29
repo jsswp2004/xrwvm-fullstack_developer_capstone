@@ -75,6 +75,7 @@ def get_dealer_details(request, dealer_id):
 
 
 # ✅ View to get reviews for a specific dealer, including sentiment
+'''
 def get_dealer_reviews(request, dealer_id):
     if(dealer_id):
         endpoint = "/fetchReviews/dealer/" + str(dealer_id)
@@ -86,7 +87,46 @@ def get_dealer_reviews(request, dealer_id):
         return JsonResponse({"status": 200, "reviews": reviews})
     else:
         return JsonResponse({"status": 400, "message": "Bad Request"})
+'''
+'''
+def get_dealer_reviews(request, dealer_id):
+    if dealer_id:
+        endpoint = "/fetchReviews/dealer/" + str(dealer_id)
+        reviews = get_request(endpoint)
+        print("Raw reviews fetched:", reviews)
 
+        try:
+            for review_detail in reviews:
+                sentiment = analyze_review_sentiments(review_detail['review'])
+                review_detail['sentiment'] = sentiment['sentiment']
+        except Exception as e:
+            print("🔥 Error analyzing sentiment:", e)
+            return JsonResponse({"status": 500, "message": "Sentiment analysis failed"})
+
+        return JsonResponse({"status": 200, "reviews": reviews})
+    else:
+        return JsonResponse({"status": 400, "message": "Bad Request"})
+'''
+def get_dealer_reviews(request, dealer_id):
+    if dealer_id:
+        endpoint = "/fetchReviews/dealer/" + str(dealer_id)
+        reviews = get_request(endpoint)
+        print("Raw reviews fetched:", reviews)
+
+        for review_detail in reviews:
+            try:
+                sentiment = analyze_review_sentiments(review_detail['review'])
+                if sentiment and 'sentiment' in sentiment:
+                    review_detail['sentiment'] = sentiment['sentiment']
+                else:
+                    review_detail['sentiment'] = "neutral"  # fallback
+            except Exception as e:
+                print("🔥 Sentiment error:", e)
+                review_detail['sentiment'] = "neutral"  # fallback
+
+        return JsonResponse({"status": 200, "reviews": reviews})
+    else:
+        return JsonResponse({"status": 400, "message": "Bad Request"})
 
 # ✅ View to submit a review (POST only if authenticated)
 @csrf_exempt
